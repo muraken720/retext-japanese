@@ -12,7 +12,8 @@ npm install retext-japanese
 
 ## Usage
 
-### exapmle/example.js
+*   exapmle/example.js
+
 ```javascript
 var retext = require('retext')
 var japanese = require('retext-japanese')
