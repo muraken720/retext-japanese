@@ -20,6 +20,9 @@ retext().use(japanese, options).use(() => {
     console.log(inspect(cst))
   }
 }).process(text, (err, file, doc) => {
+  if (err) {
+    console.log(err)
+  }
   console.log('\n=== doc ===')
   console.log(doc)
 })
@@ -37,6 +40,9 @@ retext().use(japanese, options).use(() => {
     console.log(inspect(cst))
   }
 }).process(text, (err, file, doc) => {
+  if (err) {
+    console.log(err)
+  }
   console.log('\n=== doc ===')
   console.log(doc)
 })
