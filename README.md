@@ -16,7 +16,7 @@ npm install retext-japanese
 
 ```javascript
 var retext = require('retext')
-var japanese = require('../')
+var japanese = require('retext-japanese')
 var inspect = require('unist-util-inspect')
 
 var options = {
