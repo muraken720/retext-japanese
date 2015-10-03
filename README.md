@@ -16,12 +16,12 @@ npm install retext-japanese
 
 ```javascript
 var retext = require('retext')
-var japanese = require('retext-japanese')
+var japanese = require('../')
 var inspect = require('unist-util-inspect')
 
 var options = {
   position: true,
-  pos: true,
+  pos: false,
   dicDir: '../dict/' // copy kuromoji.js's dictionary from node_modules/kuromoji/dist/dict.
 }
 
@@ -34,10 +34,7 @@ retext().use(japanese, options).use(() => {
     console.log(inspect(cst))
   }
 }).process(text, (err, file, doc) => {
-  if (err) {
-    console.lgo(err)
-  }
-  console.log('=== doc ===')
+  console.log('\n=== doc ===')
   console.log(doc)
 })
 
@@ -46,49 +43,87 @@ retext().use(japanese, options).use(() => {
 * ├─ ParagraphNode[2] (1:1-1:6, 0-5)
 * │  ├─ SentenceNode[1] (1:1-1:5, 0-4)
 * │  │  └─ WordNode[1] (1:1-1:5, 0-4)
-* │  │     └─ TextNode: "タイトル" (1:1-1:5, 0-4) [data={"word_id":509010,"word_type":"KNOWN","word_position":1,"surface_form":"タイトル","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"タイトル","reading":"タイトル","pronunciation":"タイトル"}]
+* │  │     └─ TextNode: "タイトル" (1:1-1:5, 0-4)
 * │  └─ WhiteSpaceNode: "\n" (1:5-1:6, 4-5)
 * ├─ ParagraphNode[1] (2:1-2:2, 5-6)
 * │  └─ WhiteSpaceNode: "\n" (2:1-2:2, 5-6)
 * └─ ParagraphNode[4] (3:1-3:39, 4-44)
 *    ├─ SentenceNode[3] (3:1-3:11, 4-14)
 *    │  ├─ WordNode[1] (3:1-3:2, 4-5)
-*    │  │  └─ TextNode: "1" (3:1-3:2, 4-5) [data={"word_id":90,"word_type":"UNKNOWN","word_position":1,"surface_form":"1","pos":"名詞","pos_detail_1":"数","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"*"}]
-*    │  ├─ WhiteSpaceNode: " " (3:2-3:3, 5-6) [data={"word_id":10,"word_type":"UNKNOWN","word_position":2,"surface_form":" ","pos":"記号","pos_detail_1":"空白","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"*"}]
+*    │  │  └─ TextNode: "1" (3:1-3:2, 4-5)
+*    │  ├─ WhiteSpaceNode: " " (3:2-3:3, 5-6)
 *    │  └─ WordNode[5] (3:3-3:11, 6-14)
-*    │     ├─ TextNode: "これ" (3:3-3:5, 6-8) [data={"word_id":956570,"word_type":"KNOWN","word_position":3,"surface_form":"これ","pos":"名詞","pos_detail_1":"代名詞","pos_detail_2":"一般","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"これ","reading":"コレ","pronunciation":"コレ"}]
-*    │     ├─ TextNode: "は" (3:5-3:6, 8-9) [data={"word_id":2595270,"word_type":"KNOWN","word_position":5,"surface_form":"は","pos":"助詞","pos_detail_1":"係助詞","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"は","reading":"ハ","pronunciation":"ワ"}]
-*    │     ├─ TextNode: "前段" (3:6-3:8, 9-11) [data={"word_id":832710,"word_type":"KNOWN","word_position":6,"surface_form":"前段","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"前段","reading":"ゼンダン","pronunciation":"ゼンダン"}]
-*    │     ├─ TextNode: "です" (3:8-3:10, 11-13) [data={"word_id":305080,"word_type":"KNOWN","word_position":8,"surface_form":"です","pos":"助動詞","pos_detail_1":"*","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"特殊・デス","conjugated_form":"基本形","basic_form":"です","reading":"デス","pronunciation":"デス"}]
-*    │     └─ PunctuationNode: "。" (3:10-3:11, 13-14) [data={"word_id":2612880,"word_type":"KNOWN","word_position":10,"surface_form":"。","pos":"記号","pos_detail_1":"句点","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"。","reading":"。","pronunciation":"。"}]
+*    │     ├─ TextNode: "これ" (3:3-3:5, 6-8)
+*    │     ├─ TextNode: "は" (3:5-3:6, 8-9)
+*    │     ├─ TextNode: "前段" (3:6-3:8, 9-11)
+*    │     ├─ TextNode: "です" (3:8-3:10, 11-13)
+*    │     └─ PunctuationNode: "。" (3:10-3:11, 13-14)
 *    ├─ SentenceNode[1] (3:11-3:30, 14-33)
 *    │  └─ WordNode[14] (3:11-3:30, 14-33)
-*    │     ├─ TextNode: "これ" (3:11-3:13, 14-16) [data={"word_id":956570,"word_type":"KNOWN","word_position":1,"surface_form":"これ","pos":"名詞","pos_detail_1":"代名詞","pos_detail_2":"一般","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"これ","reading":"コレ","pronunciation":"コレ"}]
-*    │     ├─ TextNode: "は" (3:13-3:14, 16-17) [data={"word_id":2595270,"word_type":"KNOWN","word_position":3,"surface_form":"は","pos":"助詞","pos_detail_1":"係助詞","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"は","reading":"ハ","pronunciation":"ワ"}]
-*    │     ├─ TextNode: "中段" (3:14-3:16, 17-19) [data={"word_id":652400,"word_type":"KNOWN","word_position":4,"surface_form":"中段","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"中段","reading":"チュウダン","pronunciation":"チューダン"}]
-*    │     ├─ PunctuationNode: "（" (3:16-3:17, 19-20) [data={"word_id":2612070,"word_type":"KNOWN","word_position":6,"surface_form":"（","pos":"記号","pos_detail_1":"括弧開","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"（","reading":"（","pronunciation":"（"}]
-*    │     ├─ TextNode: "２" (3:17-3:18, 20-21) [data={"word_id":1300010,"word_type":"KNOWN","word_position":7,"surface_form":"２","pos":"名詞","pos_detail_1":"数","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"２","reading":"ニ","pronunciation":"ニ"}]
-*    │     ├─ TextNode: "文" (3:18-3:19, 21-22) [data={"word_id":2604310,"word_type":"KNOWN","word_position":8,"surface_form":"文","pos":"名詞","pos_detail_1":"接尾","pos_detail_2":"助数詞","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"文","reading":"ブン","pronunciation":"ブン"}]
-*    │     ├─ TextNode: "の" (3:19-3:20, 22-23) [data={"word_id":2595360,"word_type":"KNOWN","word_position":9,"surface_form":"の","pos":"助詞","pos_detail_1":"連体化","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"の","reading":"ノ","pronunciation":"ノ"}]
-*    │     ├─ TextNode: "場合" (3:20-3:22, 23-25) [data={"word_id":344200,"word_type":"KNOWN","word_position":10,"surface_form":"場合","pos":"名詞","pos_detail_1":"副詞可能","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"場合","reading":"バアイ","pronunciation":"バアイ"}]
-*    │     ├─ TextNode: "は" (3:22-3:23, 25-26) [data={"word_id":2595270,"word_type":"KNOWN","word_position":12,"surface_form":"は","pos":"助詞","pos_detail_1":"係助詞","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"は","reading":"ハ","pronunciation":"ワ"}]
-*    │     ├─ TextNode: "後段" (3:23-3:25, 26-28) [data={"word_id":613140,"word_type":"KNOWN","word_position":13,"surface_form":"後段","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"後段","reading":"コウダン","pronunciation":"コーダン"}]
-*    │     ├─ PunctuationNode: "。" (3:25-3:26, 28-29) [data={"word_id":2612880,"word_type":"KNOWN","word_position":15,"surface_form":"。","pos":"記号","pos_detail_1":"句点","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"。","reading":"。","pronunciation":"。"}]
-*    │     ├─ PunctuationNode: "）" (3:26-3:27, 29-30) [data={"word_id":2612210,"word_type":"KNOWN","word_position":1,"surface_form":"）","pos":"記号","pos_detail_1":"括弧閉","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"）","reading":"）","pronunciation":"）"}]
-*    │     ├─ TextNode: "です" (3:27-3:29, 30-32) [data={"word_id":305080,"word_type":"KNOWN","word_position":2,"surface_form":"です","pos":"助動詞","pos_detail_1":"*","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"特殊・デス","conjugated_form":"基本形","basic_form":"です","reading":"デス","pronunciation":"デス"}]
-*    │     └─ PunctuationNode: "。" (3:29-3:30, 32-33) [data={"word_id":2612880,"word_type":"KNOWN","word_position":4,"surface_form":"。","pos":"記号","pos_detail_1":"句点","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"。","reading":"。","pronunciation":"。"}]
+*    │     ├─ TextNode: "これ" (3:11-3:13, 14-16)
+*    │     ├─ TextNode: "は" (3:13-3:14, 16-17)
+*    │     ├─ TextNode: "中段" (3:14-3:16, 17-19)
+*    │     ├─ PunctuationNode: "（" (3:16-3:17, 19-20)
+*    │     ├─ TextNode: "２" (3:17-3:18, 20-21)
+*    │     ├─ TextNode: "文" (3:18-3:19, 21-22)
+*    │     ├─ TextNode: "の" (3:19-3:20, 22-23)
+*    │     ├─ TextNode: "場合" (3:20-3:22, 23-25)
+*    │     ├─ TextNode: "は" (3:22-3:23, 25-26)
+*    │     ├─ TextNode: "後段" (3:23-3:25, 26-28)
+*    │     ├─ PunctuationNode: "。" (3:25-3:26, 28-29)
+*    │     ├─ PunctuationNode: "）" (3:26-3:27, 29-30)
+*    │     ├─ TextNode: "です" (3:27-3:29, 30-32)
+*    │     └─ PunctuationNode: "。" (3:29-3:30, 32-33)
 *    ├─ SentenceNode[1] (3:30-3:38, 33-41)
 *    │  └─ WordNode[5] (3:30-3:38, 33-41)
-*    │     ├─ TextNode: "これ" (3:30-3:32, 33-35) [data={"word_id":956570,"word_type":"KNOWN","word_position":1,"surface_form":"これ","pos":"名詞","pos_detail_1":"代名詞","pos_detail_2":"一般","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"これ","reading":"コレ","pronunciation":"コレ"}]
-*    │     ├─ TextNode: "は" (3:32-3:33, 35-36) [data={"word_id":2595270,"word_type":"KNOWN","word_position":3,"surface_form":"は","pos":"助詞","pos_detail_1":"係助詞","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"は","reading":"ハ","pronunciation":"ワ"}]
-*    │     ├─ TextNode: "後段" (3:33-3:35, 36-38) [data={"word_id":613140,"word_type":"KNOWN","word_position":4,"surface_form":"後段","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"後段","reading":"コウダン","pronunciation":"コーダン"}]
-*    │     ├─ TextNode: "です" (3:35-3:37, 38-40) [data={"word_id":305080,"word_type":"KNOWN","word_position":6,"surface_form":"です","pos":"助動詞","pos_detail_1":"*","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"特殊・デス","conjugated_form":"基本形","basic_form":"です","reading":"デス","pronunciation":"デス"}]
-*    │     └─ PunctuationNode: "。" (3:37-3:38, 40-41) [data={"word_id":2612880,"word_type":"KNOWN","word_position":8,"surface_form":"。","pos":"記号","pos_detail_1":"句点","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"。","reading":"。","pronunciation":"。"}]
+*    │     ├─ TextNode: "これ" (3:30-3:32, 33-35)
+*    │     ├─ TextNode: "は" (3:32-3:33, 35-36)
+*    │     ├─ TextNode: "後段" (3:33-3:35, 36-38)
+*    │     ├─ TextNode: "です" (3:35-3:37, 38-40)
+*    │     └─ PunctuationNode: "。" (3:37-3:38, 40-41)
 *    └─ WhiteSpaceNode: "\n" (3:38-3:39, 43-44)
+* 
 * === doc ===
 * タイトル
 * 
 * 1 これは前段です。これは中段（２文の場合は後段。）です。これは後段です。
+*/
+
+
+// Add POS
+options = {
+  position: true,
+  pos: true,
+  dicDir: '../dict/' // copy kuromoji.js's dictionary from node_modules/kuromoji/dist/dict.
+}
+
+text = 'すもももももももものうち'
+
+retext().use(japanese, options).use(() => {
+  return function (cst) {
+    console.log(inspect(cst))
+  }
+}).process(text, (err, file, doc) => {
+  console.log('\n=== doc ===')
+  console.log(doc)
+})
+
+/**
+* RootNode[1] (1:1-1:14, 0-13)
+* └─ ParagraphNode[2] (1:1-1:14, 0-13)
+*    ├─ SentenceNode[1] (1:1-1:13, 0-12)
+*    │  └─ WordNode[7] (1:1-1:13, 0-12)
+*    │     ├─ TextNode: "すもも" (1:1-1:4, 0-3) [data={"word_id":404420,"word_type":"KNOWN","word_position":1,"surface_form":"すもも","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"すもも","reading":"スモモ","pronunciation":"スモモ"}]
+*    │     ├─ TextNode: "も" (1:4-1:5, 3-4) [data={"word_id":2595480,"word_type":"KNOWN","word_position":4,"surface_form":"も","pos":"助詞","pos_detail_1":"係助詞","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"も","reading":"モ","pronunciation":"モ"}]
+*    │     ├─ TextNode: "もも" (1:5-1:7, 4-6) [data={"word_id":604730,"word_type":"KNOWN","word_position":5,"surface_form":"もも","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"もも","reading":"モモ","pronunciation":"モモ"}]
+*    │     ├─ TextNode: "も" (1:7-1:8, 6-7) [data={"word_id":2595480,"word_type":"KNOWN","word_position":7,"surface_form":"も","pos":"助詞","pos_detail_1":"係助詞","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"も","reading":"モ","pronunciation":"モ"}]
+*    │     ├─ TextNode: "もも" (1:8-1:10, 7-9) [data={"word_id":604730,"word_type":"KNOWN","word_position":8,"surface_form":"もも","pos":"名詞","pos_detail_1":"一般","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"もも","reading":"モモ","pronunciation":"モモ"}]
+*    │     ├─ TextNode: "の" (1:10-1:11, 9-10) [data={"word_id":2595360,"word_type":"KNOWN","word_position":10,"surface_form":"の","pos":"助詞","pos_detail_1":"連体化","pos_detail_2":"*","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"の","reading":"ノ","pronunciation":"ノ"}]
+*    │     └─ TextNode: "うち" (1:11-1:13, 10-12) [data={"word_id":1467000,"word_type":"KNOWN","word_position":11,"surface_form":"うち","pos":"名詞","pos_detail_1":"非自立","pos_detail_2":"副詞可能","pos_detail_3":"*","conjugated_type":"*","conjugated_form":"*","basic_form":"うち","reading":"ウチ","pronunciation":"ウチ"}]
+*    └─ WhiteSpaceNode: "\n" (1:13-1:14, 12-13)
+* 
+* === doc ===
+* すもももももももものうち
 */
 ```
 

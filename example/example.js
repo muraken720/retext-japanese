@@ -7,7 +7,7 @@ var inspect = require('unist-util-inspect')
 
 var options = {
   position: true,
-  pos: true,
+  pos: false,
   dicDir: '../dict/' // copy kuromoji.js's dictionary from node_modules/kuromoji/dist/dict.
 }
 
@@ -20,9 +20,24 @@ retext().use(japanese, options).use(() => {
     console.log(inspect(cst))
   }
 }).process(text, (err, file, doc) => {
-  if (err) {
-    console.lgo(err)
-  }
-  console.log('=== doc ===')
+  console.log('\n=== doc ===')
   console.log(doc)
 })
+
+options = {
+  position: true,
+  pos: true,
+  dicDir: '../dict/' // copy kuromoji.js's dictionary from node_modules/kuromoji/dist/dict.
+}
+
+text = 'すもももももももものうち'
+
+retext().use(japanese, options).use(() => {
+  return function (cst) {
+    console.log(inspect(cst))
+  }
+}).process(text, (err, file, doc) => {
+  console.log('\n=== doc ===')
+  console.log(doc)
+})
+
