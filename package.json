@@ -1,14 +1,14 @@
 {
   "name": "retext-japanese",
   "description": "Japanese language support for retext",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Kenichiro Murata <kenichiro.murata@gmail.com>",
   "bugs": {
     "url": "https://github.com/muraken720/retext-japanese/issues"
   },
   "dependencies": {
     "kuromoji": "0.0.4",
-    "parse-japanese-basic": "^0.2.0",
+    "parse-japanese-basic": "^0.3.0",
     "unist-util-visit": "^1.0.0"
   },
   "devDependencies": {
@@ -16,7 +16,7 @@
     "esmangle": "^1.0.1",
     "espower-babel": "^3.3.0",
     "mocha": "^2.3.3",
-    "power-assert": "^1.0.1",
+    "power-assert": "^1.1.0",
     "retext": "^1.0.0",
     "retext-emoji": "^1.0.0",
     "standard": "^5.3.1",
@@ -24,8 +24,7 @@
     "unist-util-select": "^1.0.0"
   },
   "files": [
-    "index.js",
-    "lib"
+    "index.js"
   ],
   "homepage": "https://github.com/muraken720/retext-japanese#readme",
   "keywords": [
@@ -47,7 +46,7 @@
     "bundle": "browserify index.js --no-builtins -s retextJapanese > retext-japanese.js",
     "postbundle": "esmangle retext-japanese.js > retext-japanese.min.js",
     "standard": "standard",
-    "test": "mocha --compilers js:espower-babel/guess test/**/*.js"
+    "test": "npm run standard && mocha --compilers js:espower-babel/guess test/**/*.js"
   },
   "standard": {
     "ignore": [

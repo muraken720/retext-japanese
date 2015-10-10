@@ -4,13 +4,11 @@ var japanese = require('../')
 var retext = require('retext')
 var inspect = require('unist-util-inspect')
 
-var text = 'タイトル\n' +
-    '\n' +
-    '1 これは前段です。これは中段（２文の場合は後段。）です。これは後段です。'
+var text = 'すもももももももものうち'
 
 var options = {
-  position: true,
-  post: false,
+  position: false,
+  pos: true,
   dicDir: '../dict/'
 }
 
@@ -25,3 +23,4 @@ retext().use(japanese, options).use(() => {
   console.log('\n=== doc ===')
   console.log(doc)
 })
+

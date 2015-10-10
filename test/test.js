@@ -2,9 +2,9 @@
 
 var assert = require('power-assert')
 
-var retext = require('retext')
 var japanese = require('../')
 
+var retext = require('retext')
 var select = require('unist-util-select')
 
 describe('RetextJapaneseTest', () => {
@@ -28,9 +28,9 @@ describe('RetextJapaneseTest', () => {
         var sentences = select(cst.children[2], 'SentenceNode')
         assert(sentences.length === 3)
 
-        // 3段落目の１文目はWordNodeが2つ
-        var words = select(cst.children[2].children[0], 'WordNode')
-        assert(words.length === 2)
+        // 3段落目の1文目にはWhiteSpaceNode、PunctuationNodeがある。
+        assert(cst.children[2].children[0].children[1].type === 'WhiteSpaceNode')
+        assert(cst.children[2].children[0].children[6].type === 'PunctuationNode')
 
         done()
       }

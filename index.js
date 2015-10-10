@@ -10,7 +10,6 @@
 /**
  * Dependencies.
  */
-
 var Parser = require('parse-japanese-basic')
 var visit = require('unist-util-visit')
 var kuromoji = require('kuromoji')
@@ -36,7 +35,26 @@ function attacher (retext, options) {
     var linedepth = 0
 
     /**
-     * Create TextNode for SymbolNode, PunctuationNode, WhiteSpaceNode, SourceNode, and TextNode with POS.
+     * Create WordNode with POS.
+     * @param item
+     * @returns {{type: string, value: *}}
+     */
+    function createWordNode (item) {
+      var wordNode = parser.createParentNode('Word')
+
+      if (options && options.pos) {
+        wordNode.data = item
+      }
+
+      var textNode = parser.createTextNode('Text', item.surface_form)
+
+      parser.add(textNode, wordNode)
+
+      return wordNode
+    }
+
+    /**
+     * Create TextNode for SymbolNode, PunctuationNode, WhiteSpaceNode and SourceNode with POS.
      * @param type
      * @param item
      * @returns {{type: string, value: *}}
@@ -72,7 +90,8 @@ function attacher (retext, options) {
             parser.column = 1
 
             /**
-             * 以降の解析はParagraphNodeの子ノードはTextNodeとWhiteSpaceNodeとなることを前提としている。
+             * 以降の解析はparse-japanece-basicによるNLCSTを前提としている。
+             * ParagraphNodeの子ノードはTextNodeとWhiteSpaceNodeとなる
              *  ParagraphNode[2]
              *  ├─ TextNode: 'あいうえお'
              *  └─ WhiteSpaceNode: '\n'
@@ -93,7 +112,6 @@ function attacher (retext, options) {
 
             // 事前準備
             var sentenceNode = parser.createParentNode('Sentence')
-            var wordNode = parser.createParentNode('Word')
 
             // kuromoji.jsにより形態素解析を行う
             var data = tokenizer.tokenize(prevChildren[0].value)
@@ -108,52 +126,34 @@ function attacher (retext, options) {
                 parser.add(sentenceNode, paragraphNode)
               }
 
-              // 文字が空白の場合
               if (item.pos_detail_1 === WS) {
-                // インラインの場合
-                if (linedepth) {
-                  parser.add(createTextNode('WhiteSpace', item), wordNode)
-                } else {
-                  // アウトラインの場合
-                  // WordNodeに子ノードが存在する場合、WordNodeを終了する
-                  if (wordNode.children.length) {
-                    parser.add(wordNode, sentenceNode)
-                    wordNode = parser.createParentNode('Word')
-                  }
-                  parser.add(createTextNode('WhiteSpace', item), sentenceNode)
-                }
+                // 文字が空白の場合
+                parser.add(createTextNode('WhiteSpace', item), sentenceNode)
               } else if (item.pos_detail_1 === M_OP) {
                 // 文字が開括弧の場合
                 linedepth++
-                parser.add(createTextNode('Punctuation', item), wordNode)
+                parser.add(createTextNode('Punctuation', item), sentenceNode)
               } else if (item.pos_detail_1 === M_CP) {
                 // 文字が閉括弧の場合
                 linedepth--
-                parser.add(createTextNode('Punctuation', item), wordNode)
+                parser.add(createTextNode('Punctuation', item), sentenceNode)
               } else if (item.pos_detail_1 === M_P) {
                 // 文字が句点の場合
-                parser.add(createTextNode('Punctuation', item), wordNode)
-                // アウトラインの場合、WordNodeを終了し、次のWordNodeを作る
-                if (!linedepth) {
-                  parser.add(wordNode, sentenceNode)
-                  wordNode = parser.createParentNode('Word')
-
+                parser.add(createTextNode('Punctuation', item), sentenceNode)
+                // インラインではない場合
+                if (!linedepth && index !== data.length - 1) {
                   // 行末でなければ次のSentenceNodeを作る
-                  if (index !== data.length - 1) {
-                    sentenceNode = parser.createParentNode('Sentence')
-                    parser.add(sentenceNode, paragraphNode)
-                  }
+                  sentenceNode = parser.createParentNode('Sentence')
+                  parser.add(sentenceNode, paragraphNode)
                 }
               } else {
                 // 改行以外のその他の文字の場合
-                parser.add(createTextNode('Text', item), wordNode)
-              }
 
-              // 行末の場合
-              if (index === data.length - 1) {
-                // WordNodeに子ノードが存在する場合、WordNodeを終了する（句点で終わらない文章の場合）
-                if (wordNode.children.length) {
-                  parser.add(wordNode, sentenceNode)
+                // 記号であれば PunctuationNode を作る
+                if (item.pos === '記号' && item.pos_detail_1 === '一般') {
+                  parser.add(createTextNode('Punctuation', item), sentenceNode)
+                } else {
+                  parser.add(createWordNode(item), sentenceNode)
                 }
               }
             }
